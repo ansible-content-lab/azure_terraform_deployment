@@ -37,8 +37,7 @@ resource "random_string" "deployment_id" {
 }
 
 resource "azurerm_resource_group" "aap" {
-#  name     = "cahl-rgaap-on-azure"
-  name     = "cahl-rg"
+  name     = "${var.resource_group}"
   location = "East US"
 }
 
@@ -46,14 +45,14 @@ resource "azurerm_virtual_network" "aap" {
   name                = "${var.deployment_id}-aap-vn"
   location            = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["${var.infrastructure_vpc_cidr}"]
 }
 
 resource "azurerm_subnet" "aap" {
   name                 = "${var.deployment_id}-aap-sn"
   resource_group_name  = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
-  address_prefixes     = ["10.0.2.0/24"]
+  address_prefixes     = ["${var.infrastructure_vpc_subnet_cidr_postgres}"]
   service_endpoints    = ["Microsoft.Storage"]
   delegation {
     name = "fs"
@@ -82,16 +81,29 @@ resource "azurerm_postgresql_flexible_server" "aap" {
   name                   = "${var.deployment_id}-psqlflexibleserver"
   resource_group_name    = azurerm_resource_group.aap.name
   location               = azurerm_resource_group.aap.location
-  version                = "13"
+  version                = "${var.infrastructure_db_engine_version}"
   delegated_subnet_id    = azurerm_subnet.aap.id
   private_dns_zone_id    = azurerm_private_dns_zone.aap.id
-  administrator_login    = "psqladmin"
-  administrator_password = "H@Sh1CoR3!"
-  zone                   = "1"
+  administrator_login    = "${var.infrastructure_db_username}"
+  administrator_password = "${var.infrastructure_db_password}"
 
-  storage_mb = 32768
+  storage_mb = var.infrastructure_db_storage_mb
 
-  sku_name   = "GP_Standard_D4s_v3"
+  sku_name   = "${var.infrastructure_db_instance_sku}"
   depends_on = [azurerm_private_dns_zone_virtual_network_link.aap]
 
+}
+
+resource "azurerm_postgresql_flexible_server_database" "awx" {
+  name      = "awx"
+  server_id = azurerm_postgresql_flexible_server.aap.id
+  collation = "en_US.utf8"
+  charset   = "utf8"
+}
+
+resource "azurerm_postgresql_flexible_server_database" "pulp" {
+  name      = "pulp"
+  server_id = azurerm_postgresql_flexible_server.aap.id
+  collation = "en_US.utf8"
+  charset   = "utf8"
 }
