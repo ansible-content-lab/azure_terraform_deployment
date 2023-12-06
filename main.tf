@@ -66,7 +66,7 @@ resource "azurerm_subnet" "aap" {
 }
 
 resource "azurerm_private_dns_zone" "aap" {
-  name                = "example.postgres.database.azure.com"
+  name                = "aap.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.aap.name
 }
 
@@ -94,6 +94,12 @@ resource "azurerm_postgresql_flexible_server" "aap" {
 
 }
 
+resource "azurerm_postgresql_flexible_server_configuration" "aap" {
+  name      = "azure.extensions"
+  server_id = azurerm_postgresql_flexible_server.aap.id
+  value     = "hstore"
+}
+
 resource "azurerm_postgresql_flexible_server_database" "awx" {
   name      = "awx"
   server_id = azurerm_postgresql_flexible_server.aap.id
@@ -101,8 +107,15 @@ resource "azurerm_postgresql_flexible_server_database" "awx" {
   charset   = "utf8"
 }
 
-resource "azurerm_postgresql_flexible_server_database" "pulp" {
-  name      = "pulp"
+resource "azurerm_postgresql_flexible_server_database" "hub" {
+  name      = "hub"
+  server_id = azurerm_postgresql_flexible_server.aap.id
+  collation = "en_US.utf8"
+  charset   = "utf8"
+}
+
+resource "azurerm_postgresql_flexible_server_database" "eda" {
+  name      = "eda"
   server_id = azurerm_postgresql_flexible_server.aap.id
   collation = "en_US.utf8"
   charset   = "utf8"
