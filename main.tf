@@ -13,7 +13,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "=3.0.0"
+      version = "=3.83.0"
     }
   }
 }
@@ -66,7 +66,7 @@ resource "azurerm_subnet" "aap" {
 }
 
 resource "azurerm_private_dns_zone" "aap" {
-  name                = "aap.postgres.database.azure.com"
+  name                = "aap.${var.deployment_id}.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.aap.name
 }
 
@@ -74,14 +74,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
   name                  = "aapVnetZone.com"
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
   virtual_network_id    = azurerm_virtual_network.aap.id
-  resource_group_name = azurerm_resource_group.aap.name
+  resource_group_name   = azurerm_resource_group.aap.name
 }
 
 #
 # Database
 module "db" {
   #depends_on = [random_string.deployment_id]
-  depends_on = [azurerm_private_dns_zone_virtual_network_link.aap]
+  depends_on = [azurerm_private_dns_zone.aap,azurerm_subnet.aap, azurerm_private_dns_zone_virtual_network_link.aap]
 
   source = "./modules/db"
 
