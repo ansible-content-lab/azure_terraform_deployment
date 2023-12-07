@@ -38,7 +38,7 @@ resource "random_string" "deployment_id" {
 
 resource "azurerm_resource_group" "aap" {
   name     = "${var.resource_group}"
-  location = "East US"
+  location = "${var.location}"
 }
 
 resource "azurerm_virtual_network" "aap" {
@@ -50,7 +50,7 @@ resource "azurerm_virtual_network" "aap" {
 
 resource "azurerm_subnet" "aap" {
   name                 = "${var.deployment_id}-aap-sn"
-  resource_group_name  = azurerm_resource_group.aap.name
+  resource_group_name  = "${var.resource_group}"
   virtual_network_name = azurerm_virtual_network.aap.name
   address_prefixes     = ["${var.infrastructure_vpc_subnet_cidr_postgres}"]
   service_endpoints    = ["Microsoft.Storage"]
@@ -74,49 +74,25 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
   name                  = "aapVnetZone.com"
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
   virtual_network_id    = azurerm_virtual_network.aap.id
-  resource_group_name   = azurerm_resource_group.aap.name
+  resource_group_name = azurerm_resource_group.aap.name
 }
 
-resource "azurerm_postgresql_flexible_server" "aap" {
-  name                   = "${var.deployment_id}-psqlflexibleserver"
-  resource_group_name    = azurerm_resource_group.aap.name
-  location               = azurerm_resource_group.aap.location
-  version                = "${var.infrastructure_db_engine_version}"
-  delegated_subnet_id    = azurerm_subnet.aap.id
-  private_dns_zone_id    = azurerm_private_dns_zone.aap.id
-  administrator_login    = "${var.infrastructure_db_username}"
-  administrator_password = "${var.infrastructure_db_password}"
-
-  storage_mb = var.infrastructure_db_storage_mb
-
-  sku_name   = "${var.infrastructure_db_instance_sku}"
+#
+# Database
+module "db" {
+  #depends_on = [random_string.deployment_id]
   depends_on = [azurerm_private_dns_zone_virtual_network_link.aap]
 
-}
+  source = "./modules/db"
 
-resource "azurerm_postgresql_flexible_server_configuration" "aap" {
-  name      = "azure.extensions"
-  server_id = azurerm_postgresql_flexible_server.aap.id
-  value     = "hstore"
-}
-
-resource "azurerm_postgresql_flexible_server_database" "awx" {
-  name      = "awx"
-  server_id = azurerm_postgresql_flexible_server.aap.id
-  collation = "en_US.utf8"
-  charset   = "utf8"
-}
-
-resource "azurerm_postgresql_flexible_server_database" "hub" {
-  name      = "hub"
-  server_id = azurerm_postgresql_flexible_server.aap.id
-  collation = "en_US.utf8"
-  charset   = "utf8"
-}
-
-resource "azurerm_postgresql_flexible_server_database" "eda" {
-  name      = "eda"
-  server_id = azurerm_postgresql_flexible_server.aap.id
-  collation = "en_US.utf8"
-  charset   = "utf8"
+  deployment_id = "${var.deployment_id}"
+  resource_group = azurerm_resource_group.aap.name
+  location = azurerm_resource_group.aap.location
+  infrastructure_db_username = "${var.infrastructure_db_username}"
+  infrastructure_db_password = "${var.infrastructure_db_password}"
+  infrastructure_db_engine_version = "${var.infrastructure_db_engine_version}"
+  infrastructure_db_storage_mb = "${var.infrastructure_db_storage_mb}"
+  infrastructure_db_instance_sku = "${var.infrastructure_db_instance_sku}"
+  subnet_id = azurerm_subnet.aap.id
+  private_dns_zone_id = azurerm_private_dns_zone.aap.id
 }

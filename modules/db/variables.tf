@@ -19,38 +19,6 @@ variable "deployment_id" {
   }
 }
 
-variable "infrastructure_vpc_cidr" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the VPC resource.
-  EOT
-  type        = string
-  default     = "172.16.0.0/22"
-}
-
-variable "infrastructure_vpc_subnet_cidr_controller-eda-hub" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for controller, hub and EDA nodes.
-  EOT
-  type        = string
-  default     = "172.16.0.0/24"
-}
-
-variable "infrastructure_vpc_subnet_cidr_execution" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for execution nodes.
-  EOT
-  type        = string
-  default     = "172.16.1.0/24"
-}
-
-variable "infrastructure_vpc_subnet_cidr_postgres" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for postgres.
-  EOT
-  type        = string
-  default     = "172.16.2.0/24"
-}
-
 variable "infrastructure_db_username" {
   description = "PostgreSQL username."
   type        = string
@@ -80,3 +48,14 @@ variable "infrastructure_db_instance_sku" {
   type        = string
   default     = "GP_Standard_D2s_v3"
 }
+
+variable "subnet_id" {
+  description = "Azure subnet id."
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "Azure private DNS zone id."
+  type        = string
+}
+
