@@ -50,7 +50,7 @@ resource "azurerm_virtual_network" "aap" {
 
 resource "azurerm_subnet" "aap" {
   name                 = "${var.deployment_id}-aap-sn"
-  resource_group_name  = "${var.resource_group}"
+  resource_group_name  = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
   address_prefixes     = ["${var.infrastructure_vpc_subnet_cidr_postgres}"]
   service_endpoints    = ["Microsoft.Storage"]
