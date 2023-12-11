@@ -1,0 +1,13 @@
+**/.terraform
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.plan
+*.tfplan
+.DS_Store
+.history
+.vscode/
+.env
+.ssh
+**/node_modules/
+.terraform.lock.hcl
