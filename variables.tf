@@ -52,6 +52,7 @@ variable "infrastructure_db_username" {
 variable "infrastructure_db_password" {
   description = "PostgreSQL password."
   type        = string
+  sensitive   = true
 }
 
 variable "infrastructure_db_engine_version" {

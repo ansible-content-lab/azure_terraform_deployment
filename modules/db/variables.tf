@@ -28,7 +28,7 @@ variable "infrastructure_db_username" {
 variable "infrastructure_db_password" {
   description = "PostgreSQL password."
   type        = string
-  default     = "ChangeMe1234"
+  sensitive   = true
 }
 
 variable "infrastructure_db_engine_version" {
