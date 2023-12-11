@@ -58,4 +58,3 @@ variable "private_dns_zone_id" {
   description = "Azure private DNS zone id."
   type        = string
 }
-

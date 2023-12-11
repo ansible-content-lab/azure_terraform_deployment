@@ -20,33 +20,25 @@ variable "deployment_id" {
 }
 
 variable "infrastructure_vpc_cidr" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the VPC resource.
-  EOT
+  description = "IPv4 CIDR netmask for the VPC resource."
   type        = string
   default     = "172.16.0.0/22"
 }
 
-variable "infrastructure_vpc_subnet_cidr_controller-eda-hub" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for controller, hub and EDA nodes.
-  EOT
-  type        = string
-  default     = "172.16.0.0/24"
-}
+#variable "infrastructure_vpc_subnet_cidr_controller-eda-hub" {
+#  description = "IPv4 CIDR netmask for the subnet resource for controller, hub and EDA nodes."
+#  type        = string
+#  default     = "172.16.0.0/24"
+#}
 
-variable "infrastructure_vpc_subnet_cidr_execution" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for execution nodes.
-  EOT
-  type        = string
-  default     = "172.16.1.0/24"
-}
+#variable "infrastructure_vpc_subnet_cidr_execution" {
+#  description = "IPv4 CIDR netmask for the subnet resource for execution nodes."
+#  type        = string
+#  default     = "172.16.1.0/24"
+#}
 
 variable "infrastructure_vpc_subnet_cidr_postgres" {
-  description = <<-EOT
-    IPv4 CIDR netmask for the subnet resource for postgres.
-  EOT
+  description = "IPv4 CIDR netmask for the subnet resource for postgres."
   type        = string
   default     = "172.16.2.0/24"
 }
@@ -60,7 +52,6 @@ variable "infrastructure_db_username" {
 variable "infrastructure_db_password" {
   description = "PostgreSQL password."
   type        = string
-  default     = "ChangeMe1234"
 }
 
 variable "infrastructure_db_engine_version" {
