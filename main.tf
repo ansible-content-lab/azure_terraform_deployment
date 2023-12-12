@@ -47,6 +47,7 @@ resource "azurerm_resource_group" "aap" {
 }
 
 resource "azurerm_virtual_network" "aap" {
+  depends_on = [ azurerm_resource_group.aap ]
   name                = "${var.deployment_id}-aap-vn"
   location            = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
@@ -55,6 +56,7 @@ resource "azurerm_virtual_network" "aap" {
 }
 
 resource "azurerm_subnet" "aap" {
+  depends_on = [ azurerm_virtual_network.aap ]
   name                 = "${var.deployment_id}-aap-sn"
   resource_group_name  = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
@@ -71,6 +73,15 @@ resource "azurerm_subnet" "aap" {
   }
 }
 
+resource "azurerm_subnet" "aap_controller" {
+  depends_on = [ azurerm_virtual_network.aap ]
+  name                 = "${var.deployment_id}-aap-controller-subnet"
+  resource_group_name  = azurerm_resource_group.aap.name
+  virtual_network_name = azurerm_virtual_network.aap.name
+  address_prefixes     = ["172.16.0.0/24"]
+  #service_endpoints    = ["Microsoft.Storage"]
+}
+
 resource "azurerm_private_dns_zone" "aap" {
   name                = "aap.${var.deployment_id}.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.aap.name
@@ -78,6 +89,7 @@ resource "azurerm_private_dns_zone" "aap" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
+  depends_on = [ azurerm_private_dns_zone.aap ]
   name                  = "postgres-link"
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
   virtual_network_id    = azurerm_virtual_network.aap.id
@@ -103,4 +115,17 @@ module "db" {
   subnet_id = azurerm_subnet.aap.id
   private_dns_zone_id = azurerm_private_dns_zone.aap.id
   persistent_tags = local.persistent_tags
+}
+#
+# VM Creation - controller
+#
+module "controller" {
+  depends_on = [ module.db ]
+  source = "./modules/vm"
+
+  deployment_id = var.deployment_id
+  resource_group = azurerm_resource_group.aap.name
+  app_tag = "controller"
+  persistent_tags = local.persistent_tags
+  subnet_id = azurerm_subnet.aap_controller.id
 }
