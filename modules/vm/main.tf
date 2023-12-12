@@ -51,33 +51,31 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
   location = var.location
   network_interface_ids = [azurerm_network_interface.aap_infrastructure_network_interface.id]
   size = var.infrastructure_virtual_machines[var.app_tag].instance_type
-
   os_disk {
     caching = "ReadWrite"
     storage_account_type = "Premium_LRS"
     disk_size_gb = var.os_disk.disk_size_gb
   }
-
   source_image_reference {
     offer = var.source_image_reference.offer
     publisher = var.source_image_reference.publisher
     sku = var.source_image_reference.sku
     version = var.source_image_reference.version
   }
+
+  admin_ssh_key {
+    username = var.infrastructure_admin_username
+    public_key = file(var.infrastructure_admin_ssh_public_key_filepath)
+  }
   
   disable_password_authentication = true
   admin_username = var.infrastructure_admin_username
 
-   tags = merge(
+  tags = merge(
     {
       Name = "vm-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
       app = var.app_tag
     },
     var.persistent_tags
   )
-  admin_ssh_key {
-    username = var.infrastructure_admin_username
-    public_key = file(var.infrastructure_admin_ssh_public_key_filepath)
-  }
-
 }
