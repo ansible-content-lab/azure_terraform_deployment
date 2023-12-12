@@ -4,7 +4,7 @@ This is the template that will deploy Ansible on Azure. While this template will
 
 ## Deploying Ansible Automation Platform
 
-This section will walk through deploying the AWS infrastructure and Ansible Automation Platform.
+This section will walk through deploying the Azure infrastructure and Ansible Automation Platform.
 
 ### Deploying Infrastructure
 
@@ -30,11 +30,25 @@ Apply infrastructure
 ```bash
 terraform apply
 ```
+Confirm to create infrastructure or pass in the `-auto-approve` parameter.
 
-Confirm to create infrastructure.
 
 To destroy infrastructure
 
 ```bash
 terraform destroy
+```
+Confirm to destroy infrastructure or pass in the `-auto-approve` parameter.
+
+## Linting Terraform
+
+We recommend using [tflint](https://github.com/terraform-linters/tflint) to help with maintaining  terraform syntax and standards.
+
+### Initialize
+```bash
+tflint --init
+```
+### Running tflint
+```bash
+tflint --recursive
 ```
