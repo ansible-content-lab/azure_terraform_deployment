@@ -17,11 +17,10 @@ resource "azurerm_postgresql_flexible_server" "aap" {
   private_dns_zone_id    = var.private_dns_zone_id
   administrator_login    = var.infrastructure_db_username
   administrator_password = var.infrastructure_db_password
-
-  storage_mb = var.infrastructure_db_storage_mb
-
-  sku_name   = var.infrastructure_db_instance_sku
-  #depends_on = [azurerm_private_dns_zone_virtual_network_link.aap]
+  storage_mb             = var.infrastructure_db_storage_mb
+  sku_name               = var.infrastructure_db_instance_sku
+  tags                   = var.persistent_tags
+  #depends_on             = [azurerm_private_dns_zone_virtual_network_link.aap]
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "aap" {

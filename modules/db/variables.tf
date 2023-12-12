@@ -19,6 +19,12 @@ variable "deployment_id" {
   }
 }
 
+variable "persistent_tags" {
+    description = "Common tags to be assigned to all resources"
+    type        = map(string)
+    default     = {}
+  }
+
 variable "infrastructure_db_username" {
   description = "PostgreSQL username."
   type        = string

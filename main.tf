@@ -4,7 +4,7 @@ locals {
   # Common tags to be assigned to all resources
   persistent_tags = {
     purpose = "automation"
-    environment   = "ansible-automation-platform"
+    environment = "ansible-automation-platform"
     deployment = "aap-infrastructure-${var.deployment_id}"
   }
 }
@@ -34,11 +34,10 @@ provider "azurerm" {
 resource "random_string" "deployment_id" {
   count = local.create_deployment_id
 
-  length   = 8
-  special  = false
+  length = 8
+  special = false
   upper = false
   numeric = false
-
 }
 
 resource "azurerm_resource_group" "aap" {
@@ -52,6 +51,7 @@ resource "azurerm_virtual_network" "aap" {
   location            = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
   address_space       = [var.infrastructure_vpc_cidr]
+  tags                = local.persistent_tags
 }
 
 resource "azurerm_subnet" "aap" {
@@ -74,6 +74,7 @@ resource "azurerm_subnet" "aap" {
 resource "azurerm_private_dns_zone" "aap" {
   name                = "aap.${var.deployment_id}.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.aap.name
+  tags                = local.persistent_tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
@@ -81,13 +82,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
   virtual_network_id    = azurerm_virtual_network.aap.id
   resource_group_name   = azurerm_resource_group.aap.name
+  tags                  = local.persistent_tags
 }
 
 #
 # Database
 module "db" {
-  #depends_on = [random_string.deployment_id]
-  #depends_on = [azurerm_private_dns_zone.aap, azurerm_subnet.aap, azurerm_private_dns_zone_virtual_network_link.aap]
   depends_on = [azurerm_private_dns_zone.aap, azurerm_subnet.aap]
 
   source = "./modules/db"
@@ -102,4 +102,5 @@ module "db" {
   infrastructure_db_instance_sku = var.infrastructure_db_instance_sku
   subnet_id = azurerm_subnet.aap.id
   private_dns_zone_id = azurerm_private_dns_zone.aap.id
+  persistent_tags = local.persistent_tags
 }
