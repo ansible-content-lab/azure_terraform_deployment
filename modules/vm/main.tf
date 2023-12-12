@@ -52,6 +52,7 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
   network_interface_ids = [azurerm_network_interface.aap_infrastructure_network_interface.id]
   size = var.infrastructure_virtual_machines[var.app_tag].instance_type
   os_disk {
+    name = "vm-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
     caching = "ReadWrite"
     storage_account_type = "Premium_LRS"
     disk_size_gb = var.os_disk.disk_size_gb

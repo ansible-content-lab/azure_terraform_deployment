@@ -47,7 +47,6 @@ resource "azurerm_resource_group" "aap" {
 }
 
 resource "azurerm_virtual_network" "aap" {
-  depends_on = [ azurerm_resource_group.aap ]
   name = "${var.deployment_id}-aap-vn"
   location = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
@@ -56,8 +55,7 @@ resource "azurerm_virtual_network" "aap" {
 }
 
 resource "azurerm_subnet" "aap" {
-  depends_on = [ azurerm_virtual_network.aap ]
-  name = "${var.deployment_id}-aap-sn"
+  name = "${var.deployment_id}-aap-subnet"
   resource_group_name  = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
   address_prefixes = [var.infrastructure_vpc_subnet_cidr_postgres]
@@ -74,7 +72,6 @@ resource "azurerm_subnet" "aap" {
 }
 
 resource "azurerm_subnet" "aap_controller" {
-  depends_on = [ azurerm_virtual_network.aap ]
   name = "${var.deployment_id}-aap-controller-subnet"
   resource_group_name = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
@@ -88,7 +85,6 @@ resource "azurerm_private_dns_zone" "aap" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
-  depends_on = [ azurerm_private_dns_zone.aap ]
   name = "postgres-link"
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
   virtual_network_id = azurerm_virtual_network.aap.id
