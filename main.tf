@@ -41,25 +41,25 @@ resource "random_string" "deployment_id" {
 }
 
 resource "azurerm_resource_group" "aap" {
-  name     = var.resource_group
+  name = var.resource_group
   location = var.location
-  tags     = local.persistent_tags
+  tags = local.persistent_tags
 }
 
 resource "azurerm_virtual_network" "aap" {
-  name                = "${var.deployment_id}-aap-vn"
-  location            = azurerm_resource_group.aap.location
+  name = "${var.deployment_id}-aap-vnet"
+  location = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
-  address_space       = [var.infrastructure_vpc_cidr]
-  tags                = local.persistent_tags
+  address_space = [var.infrastructure_vpc_cidr]
+  tags = local.persistent_tags
 }
 
 resource "azurerm_subnet" "aap" {
-  name                 = "${var.deployment_id}-aap-sn"
+  name = "${var.deployment_id}-aap-subnet"
   resource_group_name  = azurerm_resource_group.aap.name
   virtual_network_name = azurerm_virtual_network.aap.name
-  address_prefixes     = [var.infrastructure_vpc_subnet_cidr_postgres]
-  service_endpoints    = ["Microsoft.Storage"]
+  address_prefixes = [var.infrastructure_vpc_subnet_cidr_postgres]
+  service_endpoints = ["Microsoft.Storage"]
   delegation {
     name = "fs"
     service_delegation {
@@ -71,18 +71,25 @@ resource "azurerm_subnet" "aap" {
   }
 }
 
-resource "azurerm_private_dns_zone" "aap" {
-  name                = "aap.${var.deployment_id}.postgres.database.azure.com"
+resource "azurerm_subnet" "aap_controller" {
+  name = "${var.deployment_id}-aap-controller-subnet"
   resource_group_name = azurerm_resource_group.aap.name
-  tags                = local.persistent_tags
+  virtual_network_name = azurerm_virtual_network.aap.name
+  address_prefixes = ["172.16.0.0/24"]
+}
+
+resource "azurerm_private_dns_zone" "aap" {
+  name = "aap.${var.deployment_id}.postgres.database.azure.com"
+  resource_group_name = azurerm_resource_group.aap.name
+  tags = local.persistent_tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
-  name                  = "postgres-link"
+  name = "postgres-link"
   private_dns_zone_name = azurerm_private_dns_zone.aap.name
-  virtual_network_id    = azurerm_virtual_network.aap.id
-  resource_group_name   = azurerm_resource_group.aap.name
-  tags                  = local.persistent_tags
+  virtual_network_id = azurerm_virtual_network.aap.id
+  resource_group_name = azurerm_resource_group.aap.name
+  tags = local.persistent_tags
 }
 
 #
@@ -103,4 +110,17 @@ module "db" {
   subnet_id = azurerm_subnet.aap.id
   private_dns_zone_id = azurerm_private_dns_zone.aap.id
   persistent_tags = local.persistent_tags
+}
+#
+# VM Creation - controller
+#
+module "controller" {
+  depends_on = [ module.db ]
+  source = "./modules/vm"
+
+  deployment_id = var.deployment_id
+  resource_group = azurerm_resource_group.aap.name
+  app_tag = "controller"
+  persistent_tags = local.persistent_tags
+  subnet_id = azurerm_subnet.aap_controller.id
 }
