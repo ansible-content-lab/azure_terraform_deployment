@@ -47,7 +47,7 @@ resource "azurerm_resource_group" "aap" {
 }
 
 resource "azurerm_virtual_network" "aap" {
-  name = "${var.deployment_id}-aap-vn"
+  name = "${var.deployment_id}-aap-vnet"
   location = azurerm_resource_group.aap.location
   resource_group_name = azurerm_resource_group.aap.name
   address_space = [var.infrastructure_vpc_cidr]

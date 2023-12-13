@@ -22,23 +22,23 @@ resource "random_string" "infrastructure_vm_deployment_id" {
 # Create public IP
 resource "azurerm_public_ip" "aap_infrastructure_public_ip" {
   depends_on = [ random_string.infrastructure_vm_deployment_id ]
-  name                = "pip-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
-  resource_group_name    = var.resource_group
-  location               = var.location
-  allocation_method   = "Static"
+  name = "pip-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
+  resource_group_name = var.resource_group
+  location = var.location
+  allocation_method = "Static"
 }
 
 # Create network interface
 resource "azurerm_network_interface" "aap_infrastructure_network_interface" {
-  name                = "nic-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
-  resource_group_name    = var.resource_group
-  location               = var.location
+  name = "nic-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
+  resource_group_name = var.resource_group
+  location = var.location
 
   ip_configuration {
-    name                          = azurerm_public_ip.aap_infrastructure_public_ip.name
-    subnet_id                     = var.subnet_id
+    name = azurerm_public_ip.aap_infrastructure_public_ip.name
+    subnet_id = var.subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.aap_infrastructure_public_ip.id
+    public_ip_address_id = azurerm_public_ip.aap_infrastructure_public_ip.id
   }
 }
 
