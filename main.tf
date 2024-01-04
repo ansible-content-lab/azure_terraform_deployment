@@ -45,60 +45,24 @@ resource "azurerm_resource_group" "aap" {
   location = var.location
   tags = local.persistent_tags
 }
-
-resource "azurerm_virtual_network" "aap" {
-  name = "${var.deployment_id}-aap-vnet"
-  location = azurerm_resource_group.aap.location
-  resource_group_name = azurerm_resource_group.aap.name
-  address_space = [var.infrastructure_vpc_cidr]
-  tags = local.persistent_tags
+#
+# Network
+#
+module "vnet" {
+  depends_on = [random_string.deployment_id,azurerm_resource_group.aap]
+  
+  source = "./modules/vnet"
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
+  persistent_tags = local.persistent_tags
+  location = var.location
+  resource_group = var.resource_group
 }
-
-resource "azurerm_subnet" "aap" {
-  name = "${var.deployment_id}-aap-subnet"
-  resource_group_name  = azurerm_resource_group.aap.name
-  virtual_network_name = azurerm_virtual_network.aap.name
-  address_prefixes = [var.infrastructure_vpc_subnet_cidr_postgres]
-  service_endpoints = ["Microsoft.Storage"]
-  delegation {
-    name = "fs"
-    service_delegation {
-      name = "Microsoft.DBforPostgreSQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-      ]
-    }
-  }
-}
-
-resource "azurerm_subnet" "aap_controller" {
-  name = "${var.deployment_id}-aap-controller-subnet"
-  resource_group_name = azurerm_resource_group.aap.name
-  virtual_network_name = azurerm_virtual_network.aap.name
-  address_prefixes = ["172.16.0.0/24"]
-}
-
-resource "azurerm_private_dns_zone" "aap" {
-  name = "aap.${var.deployment_id}.postgres.database.azure.com"
-  resource_group_name = azurerm_resource_group.aap.name
-  tags = local.persistent_tags
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "aap" {
-  name = "postgres-link"
-  private_dns_zone_name = azurerm_private_dns_zone.aap.name
-  virtual_network_id = azurerm_virtual_network.aap.id
-  resource_group_name = azurerm_resource_group.aap.name
-  tags = local.persistent_tags
-}
-
 #
 # Database
 module "db" {
-  depends_on = [azurerm_private_dns_zone.aap, azurerm_subnet.aap]
+  depends_on = [module.vnet]
 
   source = "./modules/db"
-
   deployment_id = var.deployment_id
   resource_group = azurerm_resource_group.aap.name
   location = azurerm_resource_group.aap.location
@@ -107,8 +71,8 @@ module "db" {
   infrastructure_db_engine_version = var.infrastructure_db_engine_version
   infrastructure_db_storage_mb = var.infrastructure_db_storage_mb
   infrastructure_db_instance_sku = var.infrastructure_db_instance_sku
-  subnet_id = azurerm_subnet.aap.id
-  private_dns_zone_id = azurerm_private_dns_zone.aap.id
+  subnet_id = module.vnet.aap_infrastructure_postgres_subnet_id
+  private_dns_zone_id = module.vnet.aap_private_dns_zone_id
   persistent_tags = local.persistent_tags
 }
 #
@@ -116,11 +80,11 @@ module "db" {
 #
 module "controller" {
   depends_on = [ module.db ]
-  source = "./modules/vm"
 
+  source = "./modules/vm"
   deployment_id = var.deployment_id
   resource_group = azurerm_resource_group.aap.name
   app_tag = "controller"
   persistent_tags = local.persistent_tags
-  subnet_id = azurerm_subnet.aap_controller.id
+  subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
