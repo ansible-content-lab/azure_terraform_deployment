@@ -79,12 +79,56 @@ module "db" {
 # VM Creation - controller
 #
 module "controller" {
-  depends_on = [ module.db ]
-
   source = "./modules/vm"
+
+  count = var.infrastructure_controller_count
   deployment_id = var.deployment_id
   resource_group = azurerm_resource_group.aap.name
   app_tag = "controller"
   persistent_tags = local.persistent_tags
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  depends_on = [ module.db ]
+}
+#
+# VM Creation - hub
+#
+module "hub" {
+  source = "./modules/vm"
+  
+  count = var.infrastructure_hub_count
+  deployment_id = var.deployment_id
+  resource_group = azurerm_resource_group.aap.name
+  app_tag = "hub"
+  persistent_tags = local.persistent_tags
+  subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  depends_on = [ module.db ]
+}
+#
+# VM Creation - execution
+#
+module "execution" {
+  source = "./modules/vm"
+  
+  count = var.infrastructure_execution_count
+  deployment_id = var.deployment_id
+  resource_group = azurerm_resource_group.aap.name
+  app_tag = "execution"
+  persistent_tags = local.persistent_tags
+  subnet_id = values(module.vnet.infrastructure_subnets)[1]
+  depends_on = [ module.db ]
+}
+
+#
+# VM Creation - EDA
+#
+module "eda" {
+  source = "./modules/vm"
+  
+  count = var.infrastructure_eda_count
+  deployment_id = var.deployment_id
+  resource_group = azurerm_resource_group.aap.name
+  app_tag = "eda"
+  persistent_tags = local.persistent_tags
+  subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  depends_on = [ module.db ]
 }

@@ -48,3 +48,27 @@ variable "infrastructure_db_instance_sku" {
   type = string
   default = "GP_Standard_D2s_v3"
 }
+
+variable "infrastructure_controller_count" {
+  description = "The number of instances for controller"
+  type = number
+  default = 1
+}
+
+variable "infrastructure_eda_count" {
+  description = "The number of EDA instances"
+  type = number
+  default = 1
+}
+
+variable "infrastructure_execution_count" {
+  description = "The number of execution instances"
+  type = number
+  default = 1
+}
+
+variable "infrastructure_hub_count" {
+  description = "The number of instances for hub"
+  type = number
+  default = 1
+}
