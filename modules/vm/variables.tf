@@ -79,7 +79,6 @@ variable "infrastructure_admin_username" {
 variable "infrastructure_virtual_machines" {
   type = map(object({
     name = string
-    number_of_instances = number
     subnet = string
     instance_type = string
   }))
@@ -87,25 +86,21 @@ variable "infrastructure_virtual_machines" {
   "controller" = {
     instance_type = "Standard_B4ms"
     name = "controller"
-    number_of_instances = 1
     subnet = "controller-eda-hub"
   },
   "execution" = {
     instance_type = "Standard_B4ms"
     name = "execution"
-    number_of_instances = 0
     subnet = "execution"
   },
   "hub" = {
     instance_type = "Standard_B4ms"
     name = "hub"
-    number_of_instances = 1
     subnet = "controller-eda-hub"
   },
   "eda" = {
     instance_type = "Standard_B4ms"
     name = "eda"
-    number_of_instances = 0
     subnet = "controller-eda-hub"
   }
 }
