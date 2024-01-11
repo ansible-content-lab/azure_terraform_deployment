@@ -41,94 +41,103 @@ resource "random_string" "deployment_id" {
 }
 
 resource "azurerm_resource_group" "aap" {
-  name = var.resource_group
   location = var.location
+  name = var.resource_group
   tags = local.persistent_tags
 }
+
 #
 # Network
 #
 module "vnet" {
   depends_on = [random_string.deployment_id,azurerm_resource_group.aap]
-  
   source = "./modules/vnet"
+
   deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
-  persistent_tags = local.persistent_tags
   location = var.location
+  persistent_tags = local.persistent_tags
   resource_group = var.resource_group
 }
+
 #
 # Database
 module "db" {
   depends_on = [module.vnet]
-
   source = "./modules/db"
+
   deployment_id = var.deployment_id
-  resource_group = azurerm_resource_group.aap.name
-  location = azurerm_resource_group.aap.location
   infrastructure_db_username = var.infrastructure_db_username
   infrastructure_db_password = var.infrastructure_db_password
   infrastructure_db_engine_version = var.infrastructure_db_engine_version
   infrastructure_db_storage_mb = var.infrastructure_db_storage_mb
   infrastructure_db_instance_sku = var.infrastructure_db_instance_sku
-  subnet_id = module.vnet.aap_infrastructure_postgres_subnet_id
-  private_dns_zone_id = module.vnet.aap_private_dns_zone_id
+  location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
+  private_dns_zone_id = module.vnet.aap_private_dns_zone_id
+  resource_group = azurerm_resource_group.aap.name
+  subnet_id = module.vnet.aap_infrastructure_postgres_subnet_id
 }
+
 #
 # VM Creation - controller
 #
 module "controller" {
+  depends_on = [ module.db ]
   source = "./modules/vm"
 
+  app_tag = "controller"
   count = var.infrastructure_controller_count
   deployment_id = var.deployment_id
-  resource_group = azurerm_resource_group.aap.name
-  app_tag = "controller"
+  location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
+  resource_group = azurerm_resource_group.aap.name
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
-  depends_on = [ module.db ]
 }
+
 #
 # VM Creation - hub
 #
 module "hub" {
+  depends_on = [ module.db ]
   source = "./modules/vm"
-  
+
+  app_tag = "hub"
   count = var.infrastructure_hub_count
   deployment_id = var.deployment_id
-  resource_group = azurerm_resource_group.aap.name
-  app_tag = "hub"
+  location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
+  resource_group = azurerm_resource_group.aap.name
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
-  depends_on = [ module.db ]
 }
+
 #
 # VM Creation - execution
 #
 module "execution" {
+  depends_on = [ module.db ]
   source = "./modules/vm"
-  
+
+  app_tag = "execution"
   count = var.infrastructure_execution_count
   deployment_id = var.deployment_id
-  resource_group = azurerm_resource_group.aap.name
-  app_tag = "execution"
+  location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
+  resource_group = azurerm_resource_group.aap.name
   subnet_id = values(module.vnet.infrastructure_subnets)[1]
-  depends_on = [ module.db ]
 }
 
 #
 # VM Creation - EDA
 #
 module "eda" {
+  depends_on = [ module.db ]
   source = "./modules/vm"
-  
+
+  app_tag = "eda"
   count = var.infrastructure_eda_count
   deployment_id = var.deployment_id
-  resource_group = azurerm_resource_group.aap.name
-  app_tag = "eda"
+  location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
+  resource_group = azurerm_resource_group.aap.name
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
-  depends_on = [ module.db ]
 }
