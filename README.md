@@ -11,7 +11,7 @@ This section will walk through deploying the Azure infrastructure and Ansible Au
 Initialize Terraform
 
 ```bash
-terraform init
+terraform init -upgrade
 ```
 
 Validate configuration
