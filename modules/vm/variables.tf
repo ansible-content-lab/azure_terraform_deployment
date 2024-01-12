@@ -9,7 +9,7 @@ variable "deployment_id" {
 variable "resource_group" {
   description = "Azure resource group."
   type = string
-  default = "aap_on_azure"
+  default = "leena-group"
 }
 
 variable "location" {

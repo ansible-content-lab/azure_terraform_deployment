@@ -59,7 +59,7 @@ variable "infrastructure_db_instance_sku" {
 variable "infrastructure_controller_count" {
   description = "The number of instances for controller"
   type = number
-  default = 1
+  default = 2
 }
 
 variable "infrastructure_eda_count" {
