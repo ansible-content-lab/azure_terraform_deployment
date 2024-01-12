@@ -6,7 +6,25 @@ output "vnet_outputs" {
   description = "vnet outputs"
   value = module.vnet
 }
-output "vm_module_outputs" {
+output "db_outputs" {
+  description = "db outputs"
+  value = module.db
+}
+output "controller_vm_module_outputs" {
   description = "VM outputs"
   value = module.controller
+}
+
+output "hub_vm_module_outputs" {
+  description = "VM outputs"
+  value = module.hub
+}
+output "execution_vm_module_outputs" {
+  description = "VM outputs"
+  value = module.execution
+}
+
+output "eda_vm_module_outputs" {
+  description = "VM outputs"
+  value = module.eda
 }
