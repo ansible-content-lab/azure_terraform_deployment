@@ -68,7 +68,7 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
     username = var.infrastructure_admin_username
     public_key = file(var.infrastructure_admin_ssh_public_key_filepath)
   }
-  
+
   disable_password_authentication = true
   admin_username = var.infrastructure_admin_username
 
@@ -79,4 +79,16 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
     },
     var.persistent_tags
   )
+
+  # Copy SSH private key file to the installer host to connect to other servers
+  provisioner "file" {
+    connection {
+      type = "ssh"
+      user = "azureuser"
+      host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
+      private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
+    }
+    source = "${var.infrastructure_admin_ssh_private_key_filepath}"
+    destination = "/home/azureuser/.ssh/infrastructure_ssh_private_key.pem"
+    }
 }

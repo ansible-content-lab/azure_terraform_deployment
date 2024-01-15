@@ -123,3 +123,9 @@ variable "infrastructure_admin_ssh_public_key_filepath" {
   type = string
   default = "~/.ssh/id_rsa.pub"
 }
+
+variable "infrastructure_admin_ssh_private_key_filepath" {
+  description = "Private ssh key file path."
+  type = string
+  default = "~/.ssh/id_rsa"
+}
