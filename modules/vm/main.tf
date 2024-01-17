@@ -102,3 +102,23 @@ resource "terraform_data" "aap_infrastructure_vm" {
       destination = "/home/azureuser/.ssh/infrastructure_ssh_private_key.pem"
       }
 }
+
+resource "terraform_data" "aap_subscription_manager" {
+    triggers_replace = [
+      azurerm_linux_virtual_machine.aap_infrastructure_vm.id
+    ]
+    connection {
+        type = "ssh"
+        user = "azureuser"
+        host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
+        private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
+      }
+    provisioner "remote-exec" {
+      inline = [ 
+        "sudo su -",
+        "sudo subscription-manager register --username ${var.aap_red_hat_username} --password ${var.aap_red_hat_password} --auto-attach",
+        "sudo dnf upgrade",
+        "sudo dnf needs-restarting --reboothint"
+       ]
+      }
+}

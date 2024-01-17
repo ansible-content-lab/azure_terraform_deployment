@@ -92,6 +92,8 @@ module "controller" {
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
   infrastructure_admin_username = var.infrastructure_admin_username
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
 
@@ -108,6 +110,8 @@ module "hub" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
@@ -125,6 +129,8 @@ module "execution" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[1]
 }
@@ -142,6 +148,8 @@ module "eda" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }

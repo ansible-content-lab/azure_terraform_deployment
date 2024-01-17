@@ -147,3 +147,14 @@ variable "infrastructure_admin_ssh_private_key_filepath" {
   type = string
   default = "~/.ssh/id_rsa"
 }
+
+variable "aap_red_hat_username" {
+  description = "The RedHat Account name"
+  type = string
+}
+
+variable "aap_red_hat_password" {
+  description = "The Red Hat account password."
+  type = string
+  sensitive = true
+}
