@@ -81,8 +81,12 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
   )
   }
 
+# Copy SSH private key file to controller vm's to connect to other servers
 resource "terraform_data" "aap_infrastructure_vm" {
     count = var.app_tag == "controller" ? 1: 0
+    triggers_replace = [
+      azurerm_linux_virtual_machine.aap_infrastructure_vm.id
+    ]
     provisioner "file" {
       connection {
         type = "ssh"
