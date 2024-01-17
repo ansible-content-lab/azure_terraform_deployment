@@ -79,16 +79,18 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
     },
     var.persistent_tags
   )
+  }
 
-  # Copy SSH private key file to the installer host to connect to other servers
-  provisioner "file" {
-    connection {
-      type = "ssh"
-      user = "azureuser"
-      host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
-      private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
-    }
-    source = "${var.infrastructure_admin_ssh_private_key_filepath}"
-    destination = "/home/azureuser/.ssh/infrastructure_ssh_private_key.pem"
-    }
+resource "terraform_data" "aap_infrastructure_vm" {
+    count = var.app_tag == "controller" ? 1: 0
+    provisioner "file" {
+      connection {
+        type = "ssh"
+        user = "azureuser"
+        host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
+        private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
+      }
+      source = "${var.infrastructure_admin_ssh_private_key_filepath}"
+      destination = "/home/azureuser/.ssh/infrastructure_ssh_private_key.pem"
+      }
 }
