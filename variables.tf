@@ -59,19 +59,19 @@ variable "infrastructure_db_instance_sku" {
 variable "infrastructure_controller_count" {
   description = "The number of instances for controller"
   type = number
-  default = 2
+  default = 1
 }
 
 variable "infrastructure_eda_count" {
   description = "The number of EDA instances"
   type = number
-  default = 1
+  default = 0
 }
 
 variable "infrastructure_execution_count" {
   description = "The number of execution instances"
   type = number
-  default = 1
+  default = 0
 }
 
 variable "infrastructure_hub_count" {
@@ -92,12 +92,12 @@ variable "infrastructure_admin_ssh_private_key_filepath" {
   default = "~/.ssh/id_rsa"
 }
 variable "aap_red_hat_username" {
-  description = "The RedHat Account name"
+  description = "Red Hat account name that will be used for Subscription Management."
   type = string
 }
 
 variable "aap_red_hat_password" {
-  description = "The Red Hat account password."
+  description = "Red Hat account password."
   type = string
   sensitive = true
 }
