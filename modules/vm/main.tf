@@ -94,7 +94,7 @@ resource "terraform_data" "aap_infrastructure_vm" {
     provisioner "file" {
       connection {
         type = "ssh"
-        user = "azureuser"
+        user = var.infrastructure_admin_username
         host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
         private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
       }
