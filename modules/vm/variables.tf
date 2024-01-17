@@ -33,9 +33,9 @@ variable "source_image_reference" {
     version = string
   })
   default = {
-    publisher = "RedHat"
-    offer = "RHEL"
-    sku = "9-lvm-gen2"
+    publisher = "redhat"
+    offer = "rh-ansible-self-managed"
+    sku = "rh-aap2"
     version = "latest"
   }
   description = <<-EOT
@@ -48,6 +48,25 @@ variable "source_image_reference" {
   EOT
 }
 
+variable "infrastructure_plan" {
+   type = object({
+    product = string
+    publisher = string
+    name = string
+  })
+  default = {
+    product = "rh-ansible-self-managed"
+    publisher = "redhat"
+    name = "rh-aap2"
+  }
+  description = <<-EOT
+  object({
+    product = "Specifies the product name for the image used to create the virtual machines."
+    publisher = "Specifies the publisher of the image used to create the virtual machines."
+    name = "(Required) Specifies the name of the image used to create the virtual machines."
+  })
+  EOT
+}
 variable "os_disk" {
   type = object({
     caching = string
@@ -71,7 +90,6 @@ variable "os_disk" {
 
 variable "infrastructure_admin_username" {
   type = string
-  default = "azureuser"
   description = "The admin username of the VM that will be deployed."
   nullable = false
 }

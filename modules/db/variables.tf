@@ -1,13 +1,13 @@
 variable "resource_group" {
   description = "Azure resource group."
-  type        = string
-  default     = "aap_on_azure"
+  type = string
+  default = "aap_on_azure"
 }
 
 variable "location" {
   description = "Azure location."
-  type        = string
-  default     = "East US"
+  type = string
+  default = "East US"
 }
 
 variable "deployment_id" {

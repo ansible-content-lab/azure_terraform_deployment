@@ -19,6 +19,13 @@ variable "deployment_id" {
   }
 }
 
+variable "infrastructure_admin_username" {
+  type = string
+  default = "azureuser"
+  description = "The admin username of the VM that will be deployed."
+  nullable = false
+}
+
 variable "infrastructure_db_username" {
   description = "PostgreSQL username."
   type = string
@@ -58,13 +65,13 @@ variable "infrastructure_controller_count" {
 variable "infrastructure_eda_count" {
   description = "The number of EDA instances"
   type = number
-  default = 1
+  default = 0
 }
 
 variable "infrastructure_execution_count" {
   description = "The number of execution instances"
   type = number
-  default = 1
+  default = 0
 }
 
 variable "infrastructure_hub_count" {
@@ -84,3 +91,26 @@ variable "infrastructure_admin_ssh_private_key_filepath" {
   type = string
   default = "~/.ssh/id_rsa"
 }
+variable "aap_red_hat_username" {
+  description = "Red Hat account name that will be used for Subscription Management."
+  type = string
+}
+
+variable "aap_red_hat_password" {
+  description = "Red Hat account password."
+  type = string
+  sensitive = true
+}
+
+variable "aap_admin_password" {
+  description = "The admin password to create for Ansible Automation Platform application."
+  type = string
+  sensitive = true
+}
+
+variable "infrastructure_aap_installer_inventory_path" {
+  description = "Inventory path on the installer host"
+  default = "/home/azureuser/inventory_azure"
+  type = string
+}
+

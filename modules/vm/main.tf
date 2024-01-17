@@ -63,7 +63,11 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
     sku = var.source_image_reference.sku
     version = var.source_image_reference.version
   }
-
+  plan {
+    product = var.infrastructure_plan.product
+    publisher = var.infrastructure_plan.publisher
+    name = var.infrastructure_plan.name
+  }
   admin_ssh_key {
     username = var.infrastructure_admin_username
     public_key = file(var.infrastructure_admin_ssh_public_key_filepath)
