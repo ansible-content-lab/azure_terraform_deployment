@@ -1,0 +1,4 @@
+Host %{ for addr in aap_controller_hosts ~}${addr} %{ endfor ~} %{ for addr in aap_ee_hosts ~}${addr} %{ endfor ~} %{ for addr in aap_hub_hosts ~}${addr} %{ endfor ~} %{ for addr in aap_eda_hosts ~}${addr} %{ endfor ~}
+    User ${infrastructure_admin_username}
+    IdentityFile /home/${infrastructure_admin_username}/.ssh/infrastructure_ssh_private_key.pem
+    StrictHostKeyChecking no

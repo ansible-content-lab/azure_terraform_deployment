@@ -59,7 +59,7 @@ variable "infrastructure_db_instance_sku" {
 variable "infrastructure_controller_count" {
   description = "The number of instances for controller"
   type = number
-  default = 2
+  default = 1
 }
 
 variable "infrastructure_eda_count" {
@@ -78,12 +78,6 @@ variable "infrastructure_hub_count" {
   description = "The number of instances for hub"
   type = number
   default = 1
-}
-
-variable "infrastructure_admin_ssh_public_key_filepath" {
-  description = "Public ssh key file path."
-  type = string
-  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "infrastructure_admin_ssh_private_key_filepath" {

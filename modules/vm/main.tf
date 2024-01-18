@@ -86,39 +86,48 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
   }
 
 # Copy SSH private key file to controller vm's to connect to other servers
-resource "terraform_data" "aap_infrastructure_vm" {
-    count = var.app_tag == "controller" ? 1: 0
-    triggers_replace = [
-      azurerm_linux_virtual_machine.aap_infrastructure_vm.id
+resource "terraform_data" "aap_infrastructure_sshkey" {
+  depends_on = [  azurerm_linux_virtual_machine.aap_infrastructure_vm ]
+
+  count = var.app_tag == "controller" ? 1: 0
+  triggers_replace = [
+    azurerm_linux_virtual_machine.aap_infrastructure_vm.id
+  ]
+  connection {
+      type = "ssh"
+      user = var.infrastructure_admin_username
+      host = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
+      private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
+  }
+  provisioner "file" {
+    source = var.infrastructure_admin_ssh_private_key_filepath
+    destination = "/home/${var.infrastructure_admin_username}/.ssh/infrastructure_ssh_private_key.pem"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 0600 /home/${var.infrastructure_admin_username}/.ssh/infrastructure_ssh_private_key.pem",
     ]
-    provisioner "file" {
-      connection {
-        type = "ssh"
-        user = var.infrastructure_admin_username
-        host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
-        private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
-      }
-      source = "${var.infrastructure_admin_ssh_private_key_filepath}"
-      destination = "/home/azureuser/.ssh/infrastructure_ssh_private_key.pem"
-      }
+  }
 }
 
 resource "terraform_data" "aap_subscription_manager" {
-    triggers_replace = [
-      azurerm_linux_virtual_machine.aap_infrastructure_vm.id
-    ]
-    connection {
-        type = "ssh"
-        user = "azureuser"
-        host        = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
-        private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
-      }
-    provisioner "remote-exec" {
-      inline = [ 
-        "sudo su -",
-        "sudo subscription-manager register --username ${var.aap_red_hat_username} --password ${var.aap_red_hat_password} --auto-attach",
-        "sudo dnf upgrade",
-        "sudo dnf needs-restarting --reboothint"
-       ]
-      }
+  depends_on = [ azurerm_linux_virtual_machine.aap_infrastructure_vm ]
+
+  triggers_replace = [
+    azurerm_linux_virtual_machine.aap_infrastructure_vm.id
+  ]
+  connection {
+    type = "ssh"
+    user = var.infrastructure_admin_username
+    host = azurerm_public_ip.aap_infrastructure_public_ip.ip_address
+    private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
+    timeout = "10m"
+  }
+  provisioner "remote-exec" {
+    inline = [ 
+      "sudo subscription-manager register --username ${var.aap_red_hat_username} --password ${var.aap_red_hat_password} --auto-attach",
+      "sudo subscription-manager config --rhsm.manage_repos=1",
+      "yes | sudo dnf upgrade"
+      ]
+  }
 }
