@@ -96,7 +96,12 @@ Confirm to create infrastructure or pass in the `-auto-approve` parameter.
 
 ### Installing Red Hat Ansible Automation Platform
 
-At this point you can ssh into one of the controller nodes and run the installer.
+At this point you can ssh into one of the controller nodes and run the installer. The default `infrastructure_admin_username` is `azureuser`. 
+
+```bash
+ssh -i ~/.ssh/id_rsa azureuser@<controller-public-ip> 
+```
+
 We provided a sample inventory that could be used to deploy AAP.
 You might need to edit the inventory to fit your needs.
 
@@ -104,7 +109,7 @@ Before you start the installation, you need to attach Ansible Automation Platfor
 
 Find the pool id for Ansible Automation Platform subscription using command 
 ```bash
-subscription-manager list --all --available
+sudo subscription-manager list --all --available
 ```
 
 Attach subscription to all the VMs 
