@@ -155,6 +155,8 @@ module "eda" {
 }
 
 resource "terraform_data" "inventory" {
+  depends_on = [ module.controller,module.hub,module.eda,module.execution ]
+
   count = var.infrastructure_controller_count
   connection {
     type = "ssh"
