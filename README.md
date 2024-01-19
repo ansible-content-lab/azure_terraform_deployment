@@ -5,7 +5,6 @@ This is the template that will deploy Ansible on Azure. While this template will
 ## Introduction
 
 This template performs the following actions in the order listed.
-Some variables can be used to skip or prevent steps by setting variables, which are covered later in this document.
 
 | Step | Description |
 | ---- | ----------- |
@@ -96,7 +95,7 @@ Confirm to create infrastructure or pass in the `-auto-approve` parameter.
 
 ### Installing Red Hat Ansible Automation Platform
 
-At this point you can ssh into one of the controller nodes and run the installer. The default `infrastructure_admin_username` is `azureuser`. 
+At this point you can ssh into one of the controller nodes and run the installer. The example below assumes the default variables.tf values for `infrastructure_admin_username` and `infrastructure_admin_ssh_private_key_filepath`. 
 
 ```bash
 ssh -i ~/.ssh/id_rsa azureuser@<controller-public-ip> 
