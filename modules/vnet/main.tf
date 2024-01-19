@@ -19,7 +19,7 @@ resource "azurerm_virtual_network" "aap_infrastructure_vnet" {
 resource "azurerm_subnet" "aap_infrastructure_subnets" {
   count = length(var.infrastructure_vpc_subnets)
   name = "subnet-${var.deployment_id}-${var.infrastructure_vpc_subnets[count.index]["name"]}"
-  resource_group_name  = var.resource_group
+  resource_group_name = var.resource_group
   virtual_network_name = azurerm_virtual_network.aap_infrastructure_vnet.name
   address_prefixes = [var.infrastructure_vpc_subnets[count.index]["cidr_block"]]
 
@@ -28,7 +28,7 @@ resource "azurerm_subnet" "aap_infrastructure_subnets" {
 
 resource "azurerm_subnet" "aap_infrastructure_postgres_subnet" {
   name = "subnet-${var.deployment_id}-postgres"
-  resource_group_name  = var.resource_group
+  resource_group_name = var.resource_group
   virtual_network_name = azurerm_virtual_network.aap_infrastructure_vnet.name
   address_prefixes = [var.infrastructure_vpc_postgres_subnet["cidr_block"]]
   service_endpoints = ["Microsoft.Storage"]

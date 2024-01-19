@@ -92,6 +92,8 @@ module "controller" {
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
   infrastructure_admin_username = var.infrastructure_admin_username
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
 
@@ -108,6 +110,8 @@ module "hub" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
@@ -125,6 +129,8 @@ module "execution" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[1]
 }
@@ -142,19 +148,23 @@ module "eda" {
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
+  aap_red_hat_username = var.aap_red_hat_username
+  aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
 }
 
 resource "terraform_data" "inventory" {
+  depends_on = [ module.controller,module.hub,module.eda,module.execution ]
+
   count = var.infrastructure_controller_count
   connection {
     type = "ssh"
     user = var.infrastructure_admin_username
     host = module.controller[count.index].vm_public_ip
     private_key = file(var.infrastructure_admin_ssh_private_key_filepath)
-    agent    = false
-    timeout  = "10m"
+    agent = false
+    timeout = "10m"
   }
 
   provisioner "file" {
@@ -173,6 +183,24 @@ resource "terraform_data" "inventory" {
         infrastructure_admin_username = var.infrastructure_admin_username
       })
       destination = var.infrastructure_aap_installer_inventory_path
+  }
+
+  provisioner "file" {
+    content = templatefile("${path.module}/templates/config.j2", { 
+        aap_controller_hosts = module.controller[*].nic_private_ip
+        aap_ee_hosts = module.execution[*].nic_private_ip
+        aap_hub_hosts = module.hub[*].nic_private_ip
+        aap_eda_hosts = module.eda[*].nic_private_ip
+        infrastructure_admin_username = var.infrastructure_admin_username
+    })
+    destination = "/home/${var.infrastructure_admin_username}/.ssh/config"
+  }
+  provisioner "remote-exec" {
+      inline = [
+        "chmod 0644 /home/${var.infrastructure_admin_username}/.ssh/config",
+        "sudo cp /home/${var.infrastructure_admin_username}/.ssh/config /root/.ssh/config",
+        "sudo cp ${var.infrastructure_aap_installer_inventory_path} /opt/ansible-automation-platform/installer/inventory_azure"
+      ]
   }
 }
 
