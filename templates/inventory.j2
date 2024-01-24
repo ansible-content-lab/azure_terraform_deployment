@@ -56,7 +56,7 @@ automationhub_pg_sslmode='prefer'
 
 automationedacontroller_admin_password='${aap_admin_password}'
 
-automationedacontroller_allowed_hostnames='%{ for addr in aap_eda_allowed_hostnames ~} ${addr} %{ endfor ~}'
+automationedacontroller_allowed_hostnames='%{ for addr in aap_eda_allowed_hostnames ~}${addr}%{ endfor ~}'
 
 automationedacontroller_pg_host='${aap_db_host}'
 automationedacontroller_pg_port=5432
