@@ -95,6 +95,8 @@ module "controller" {
   aap_red_hat_username = var.aap_red_hat_username
   aap_red_hat_password = var.aap_red_hat_password
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
+  infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
 
 #
@@ -114,6 +116,8 @@ module "hub" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
+  infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
 
 #
@@ -133,6 +137,8 @@ module "execution" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[1]
+  infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
+  infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
 
 #
@@ -152,6 +158,8 @@ module "eda" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
+  infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
 
 resource "terraform_data" "inventory" {
