@@ -133,6 +133,12 @@ terraform destroy
 ```
 Confirm to destroy infrastructure or pass in the `-auto-approve` parameter.
 
+**NOTE:**  If you do not unregister each VM from subscription manager before uninstall, for example, by using the following command on all the VMs:
+```bash
+sudo subscription-manager unregister
+```
+you can visit https://access.redhat.com/management/systems to remove the systems from subscription manager.
+
 ## Linting Terraform
 
 We recommend using [tflint](https://github.com/terraform-linters/tflint) to help with maintaining  terraform syntax and standards.
