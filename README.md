@@ -100,7 +100,7 @@ Confirm to create infrastructure or pass in the `-auto-approve` parameter.
 At this point you can ssh into one of the controller nodes and run the installer. The example below assumes the default variables.tf values for `infrastructure_admin_username` and `infrastructure_admin_ssh_private_key_filepath`. 
 
 ```bash
-ssh -i <ssh-private-key-path> azureuser@<controller-public-ip> 
+ssh -i ~/.ssh/id_rsa azureuser@<controller-public-ip> 
 ```
 
 We provided a sample inventory that could be used to deploy AAP.
