@@ -139,13 +139,11 @@ variable "subnet_id" {
 variable "infrastructure_admin_ssh_public_key_filepath" {
   description = "Public ssh key file path."
   type = string
-  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "infrastructure_admin_ssh_private_key_filepath" {
   description = "Private ssh key file path."
   type = string
-  default = "~/.ssh/id_rsa"
 }
 
 variable "aap_red_hat_username" {
