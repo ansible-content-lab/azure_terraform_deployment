@@ -14,8 +14,8 @@ variable "deployment_id" {
   description = "Creates a random string that will be used in tagging for correlating the resources used with a deployment of AAP."
   type = string
   validation {
-    condition = (length(var.deployment_id) == 8 || length(var.deployment_id) == 0) && (can(regex("^[a-z]", var.deployment_id)) || var.deployment_id == "")
-    error_message = "deployment_id length should be 8 chars and should contain lower case alpha chars only"
+    condition = ((length(var.deployment_id) >= 2 && length(var.deployment_id)<=10) || length(var.deployment_id) == 0) && (can(regex("^[a-z]", var.deployment_id)) || var.deployment_id == "")
+    error_message = "deployment_id length should be between 2-10 chars and should contain lower case alpha chars only"
   }
 }
 
@@ -62,16 +62,31 @@ variable "infrastructure_controller_count" {
   default = 1
 }
 
+variable "infrastructure_controller_instance_type" {
+  description = "The SKU which should be used for controller Virtual Machine, such as `Standard_B4ms`."
+  type = string
+  default = "Standard_B4ms"
+}
+
 variable "infrastructure_eda_count" {
   description = "The number of EDA instances"
   type = number
   default = 0
 }
-
+variable "infrastructure_eda_instance_type" {
+  description = "The SKU which should be used for eda Virtual Machine, such as `Standard_B4ms`."
+  type = string
+  default = "Standard_B4ms"
+}
 variable "infrastructure_execution_count" {
   description = "The number of execution instances"
   type = number
   default = 0
+}
+variable "infrastructure_execution_instance_type" {
+  description = "The SKU which should be used for execution Virtual Machine, such as `Standard_B4ms`."
+  type = string
+  default = "Standard_B4ms"
 }
 
 variable "infrastructure_hub_count" {
@@ -79,7 +94,11 @@ variable "infrastructure_hub_count" {
   type = number
   default = 1
 }
-
+variable "infrastructure_hub_instance_type" {
+  description = "The SKU which should be used for hub Virtual Machine, such as `Standard_B4ms`."
+  type = string
+  default = "Standard_B4ms"
+}
 variable "infrastructure_admin_ssh_public_key_filepath" {
   description = "Public ssh key file path."
   type = string

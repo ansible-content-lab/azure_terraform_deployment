@@ -2,8 +2,8 @@ variable "deployment_id" {
   description = "Creates a random string that will be used in tagging for correlating the resources used with a deployment of AAP."
   type = string
   validation {
-    condition = (length(var.deployment_id) == 8 || length(var.deployment_id) == 0) && (can(regex("^[a-z]", var.deployment_id)) || var.deployment_id == "")
-    error_message = "deployment_id length should be 8 chars and should contain lower case alpha chars only"
+    condition = ((length(var.deployment_id) >= 2 && length(var.deployment_id)<=10) || length(var.deployment_id) == 0) && (can(regex("^[a-z]", var.deployment_id)) || var.deployment_id == "")
+    error_message = "deployment_id length should be between 2-10 chars and should contain lower case alpha chars only"
   }
 }
 variable "resource_group" {
@@ -93,44 +93,6 @@ variable "infrastructure_admin_username" {
   description = "The admin username of the VM that will be deployed."
   nullable = false
 }
-
-variable "infrastructure_virtual_machines" {
-  type = map(object({
-    name = string
-    subnet = string
-    instance_type = string
-  }))
-  default = {
-  "controller" = {
-    instance_type = "Standard_B4ms"
-    name = "controller"
-    subnet = "controller-eda-hub"
-  },
-  "execution" = {
-    instance_type = "Standard_B4ms"
-    name = "execution"
-    subnet = "execution"
-  },
-  "hub" = {
-    instance_type = "Standard_B4ms"
-    name = "hub"
-    subnet = "controller-eda-hub"
-  },
-  "eda" = {
-    instance_type = "Standard_B4ms"
-    name = "eda"
-    subnet = "controller-eda-hub"
-  }
-}
-  description = <<-EOT
-  object({
-    name = "The app name to use in virtual machine name."
-    number_of_instances = "The number of instances to be created."
-    subnet = "The subnet name."
-    instance_type = "The SKU which should be used for this Virtual Machine, such as `Standard_B4ms`."
-  })
-  EOT
-}
 variable "subnet_id" {
   description = "Azure subnet id."
   type = string
@@ -155,4 +117,8 @@ variable "aap_red_hat_password" {
   description = "The Red Hat account password."
   type = string
   sensitive = true
+}
+variable "infrastructure_instance_type" {
+  description = "The SKU which should be used for this Virtual Machine, such as `Standard_B4ms`."
+  type = string
 }
