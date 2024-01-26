@@ -65,7 +65,7 @@ module "db" {
   depends_on = [module.vnet]
   source = "./modules/db"
 
-  deployment_id = var.deployment_id
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
   infrastructure_db_username = var.infrastructure_db_username
   infrastructure_db_password = var.infrastructure_db_password
   infrastructure_db_engine_version = var.infrastructure_db_engine_version
@@ -87,7 +87,7 @@ module "controller" {
 
   app_tag = "controller"
   count = var.infrastructure_controller_count
-  deployment_id = var.deployment_id
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
@@ -95,6 +95,7 @@ module "controller" {
   aap_red_hat_username = var.aap_red_hat_username
   aap_red_hat_password = var.aap_red_hat_password
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_instance_type = var.infrastructure_controller_instance_type
   infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
   infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
@@ -108,7 +109,7 @@ module "hub" {
 
   app_tag = "hub"
   count = var.infrastructure_hub_count
-  deployment_id = var.deployment_id
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
@@ -116,6 +117,7 @@ module "hub" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_instance_type = var.infrastructure_hub_instance_type
   infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
   infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
@@ -129,7 +131,7 @@ module "execution" {
 
   app_tag = "execution"
   count = var.infrastructure_execution_count
-  deployment_id = var.deployment_id
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
@@ -137,6 +139,7 @@ module "execution" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[1]
+  infrastructure_instance_type = var.infrastructure_execution_instance_type
   infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
   infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }
@@ -150,7 +153,7 @@ module "eda" {
 
   app_tag = "eda"
   count = var.infrastructure_eda_count
-  deployment_id = var.deployment_id
+  deployment_id = var.deployment_id == "" ? random_string.deployment_id[0].id : var.deployment_id
   location = azurerm_resource_group.aap.location
   persistent_tags = local.persistent_tags
   resource_group = azurerm_resource_group.aap.name
@@ -158,6 +161,7 @@ module "eda" {
   aap_red_hat_password = var.aap_red_hat_password
   infrastructure_admin_username = var.infrastructure_admin_username
   subnet_id = values(module.vnet.infrastructure_subnets)[0]
+  infrastructure_instance_type = var.infrastructure_eda_instance_type
   infrastructure_admin_ssh_public_key_filepath = var.infrastructure_admin_ssh_public_key_filepath
   infrastructure_admin_ssh_private_key_filepath = var.infrastructure_admin_ssh_private_key_filepath
 }

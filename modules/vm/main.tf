@@ -50,7 +50,7 @@ resource "azurerm_linux_virtual_machine" "aap_infrastructure_vm" {
   resource_group_name = var.resource_group
   location = var.location
   network_interface_ids = [azurerm_network_interface.aap_infrastructure_network_interface.id]
-  size = var.infrastructure_virtual_machines[var.app_tag].instance_type
+  size = var.infrastructure_instance_type
   os_disk {
     name = "vm-${var.deployment_id}-${var.app_tag}-${random_string.infrastructure_vm_deployment_id.id}"
     caching = "ReadWrite"
