@@ -87,7 +87,7 @@ Additional variables can be found in variables.tf, modules/db/variables.tf , mod
 
 Assuming that all variables are configured properly and your Azure account has permissions to deploy the resources defined in this template.
 
-The default resource group is `aap_on_azure` where all the infrastructure will be deployed. You can change the resource_group by providing `-var resource_group="<resource-group-name>` to terraform apply command.
+The default resource group is `aap_on_azure` where all the infrastructure will be deployed. You can change the resource_group by providing `-var resource_group="<resource-group-name>"` to terraform apply command.
 
 Initialize Terraform
 
